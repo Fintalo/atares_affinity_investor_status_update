@@ -10,7 +10,7 @@ Used CRM: Affinity
 This code works project based. That means it need the id of a opportunity and the id of the status field within the opportunity list.
 (Every projectxCompany should have a opportunity id and every project a status field id)
 Whenever there is a status change this code takes the status id and converts it into the corresponding status id in affintiy.
-The last step ist to take the STATUS_FIELD id, the STATUS id and the OPPORTUNITY id to change the id in Affintiy
+The last step is to take the STATUS_FIELD id, the STATUS id and the OPPORTUNITY id to change the id in Affintiy
 
 STILL MISSING:
 Wir brauchen noch eine Liste wann unser system einen status update vorschlägt mit einer ID für jeden vorgeschlagenen Status update.
@@ -34,8 +34,7 @@ def atares_status_update(req: func.HttpRequest) -> func.HttpResponse:
 
         #get variables
         opportunityId = req_body.get('opportunityId')
-        statusFieldId = req_body.get('statusFieldId')
-        listId = req_body.get('listId')
+        statusColumnId = req_body.get('statusFieldId')
 
     except ValueError:
         return func.HttpResponse(
@@ -49,9 +48,9 @@ def atares_status_update(req: func.HttpRequest) -> func.HttpResponse:
     Functions
     """
 
-    def get_field_value_id_by_field_id(data, target_field_id):
+    def get_field_id_by_column_id(data, target_field_id):
         """
-        Sucht nach einem Feld mit einem bestimmten field_id und gibt die zugehörige ID zurück.
+        Sucht nach einem Feld mit einem bestimmten column_id und gibt die zugehörige field_id zurück.
         
         :param data: Liste der Felddaten (API-Antwort)
         :param target_field_id: Die gesuchte field_id
@@ -78,12 +77,12 @@ def atares_status_update(req: func.HttpRequest) -> func.HttpResponse:
         }
         
         # Query-Parameter für die Anfrage
-        query = {
+        params = {
             "opportunity_id": opportunityId,
         }
 
         # HTTP GET-Anfrage an die API senden
-        response = requests.get(url_get, auth=auth_get, headers=headers, params=query)
+        response = requests.get(url_get, auth=auth_get, headers=headers, params=params)
 
         # Sicherstellen, dass der Request erfolgreich war
         response.raise_for_status()
@@ -114,7 +113,7 @@ def atares_status_update(req: func.HttpRequest) -> func.HttpResponse:
     """
     Filtere alle Field Values der Opportunity um genau das eine Statusfeld zu bekommen
     """
-    field_value_id = get_field_value_id_by_field_id(data_response,4696869)
+    field_value_id = get_field_id_by_column_id(data_response,statusColumnId)
 
     url_put = f'https://api.affinity.co/field-values/{field_value_id}'
 
